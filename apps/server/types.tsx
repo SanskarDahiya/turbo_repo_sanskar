@@ -2,7 +2,7 @@ interface common_mongo {
   _id: string;
   _createdOn: number;
   _updatedOn: number;
-  deleted: boolean;
+  deleted?: boolean;
 }
 
 export interface IUser extends common_mongo {
@@ -21,7 +21,7 @@ export interface IScribble extends common_mongo {
   from: string;
   to: string;
   isPublic: boolean;
-  comments: Omit<IScribble, "comment">[];
+  comments: Omit<IScribble, "comment">[] | [];
 }
 
 export interface IConnection extends common_mongo {
