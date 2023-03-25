@@ -102,7 +102,8 @@ export default function MyApp({ Component, pageProps }: AppPropsType) {
                 <li className="nav-item">
                   {user ? (
                     <div className="nav-link">
-                      <span id="username1">Sign-Out: {user.name}</span>
+                      {/* @ts-ignore */}
+                      <span id="username1">Sign-Out: {user?.name || ""}</span>
                     </div>
                   ) : (
                     <Link href="/login" className="nav-link">
