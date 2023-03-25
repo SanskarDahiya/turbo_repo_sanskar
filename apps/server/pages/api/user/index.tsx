@@ -45,13 +45,13 @@ import { Wrapper } from "../../../helper";
 //   let err;
 //   let { password, _id } = user || {};
 //   if (!user || !_id || !password) {
-//     err = new Error();
+//     err = new Error() as any;;
 //     err.message = "Insufficient Params";
 //     err.code = "Insufficient Params";
 //     return err;
 //   }
 //   if (typeof _id != "string") {
-//     err = new Error();
+//     err = new Error() as any;;
 //     err.message = "_id must be string";
 //     err.code = "_id must be string";
 //     return err;
@@ -72,7 +72,7 @@ import { Wrapper } from "../../../helper";
 //     });
 //   } catch (err) {
 //     console.log(err);
-//     err = new Error();
+//     err = new Error() as any;;
 //     err.message = "Username already exists";
 //     err.code = "Username already exists";
 //     throw err;
@@ -84,7 +84,7 @@ import { Wrapper } from "../../../helper";
 //   const { username, password, device = false } = req.body;
 
 //   if (!username || !password) {
-//     let err = new Error();
+//     let err = new Error() as any;;
 //     err.message = "Insufficient Params";
 //     err.code = "Insufficient Params";
 //     return err;
@@ -134,7 +134,7 @@ import { Wrapper } from "../../../helper";
 // const getUserById = async (req) => {
 //   const { _id } = req.body;
 //   if (!_id) {
-//     let err = new Error();
+//     let err = new Error() as any;;
 //     err.message = "Insufficient Params";
 //     err.code = "Insufficient Params";
 //     return err;
@@ -147,14 +147,14 @@ import { Wrapper } from "../../../helper";
 // const updateUser = async (req) => {
 //   const { _id, data = {} } = req.body;
 //   if (!_id || !data) {
-//     let err = new Error();
+//     let err = new Error() as any;;
 //     err.message = "Insufficient Params";
 //     err.code = "Insufficient Params";
 //     return err;
 //   }
 //   let { _id: abcd, password, username, ...rest } = data || {};
 //   if (Object.keys(rest).length <= 0) {
-//     let err = new Error();
+//     let err = new Error() as any;;
 //     err.message = "No data to update";
 //     err.code = "No data to update";
 //     return err;
@@ -162,7 +162,7 @@ import { Wrapper } from "../../../helper";
 //   const find = { _id: (_id + "").toLowerCase() };
 //   let result = await user__DB.getAllData(find);
 //   if (!result || !result[0]) {
-//     let err = new Error();
+//     let err = new Error() as any;;
 //     err.message = "User Not Found";
 //     err.code = "User Not Found";
 //     return err;

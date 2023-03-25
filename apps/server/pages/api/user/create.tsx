@@ -7,39 +7,39 @@ export default Wrapper(async (req: NextApiRequest) => {
   let err;
   let { password, _id } = user || {};
   if (!user || !_id || !password) {
-    err = new Error();
+    err = new Error() as any;
     err.message = "Insufficient Params";
     err.code = "Insufficient Params";
     return err;
   }
   if (typeof _id != "string") {
-    err = new Error();
+    err = new Error() as any;
     err.message = "_id must be string";
     err.code = "_id must be string";
     return err;
   }
-  _id = (_id + "").toLowerCase();
-  newName = password;
-  password = encPassword(password);
-  console.log(_id);
-  let result;
-  try {
-    result = await user__DB.addData({
-      ...user,
-      _id,
-      newName,
-      deleted: false,
-      password,
-      _createdOn: new Date().getTime(),
-    });
-  } catch (err) {
-    console.log(err);
-    err = new Error();
-    err.message = "Username already exists";
-    err.code = "Username already exists";
-    throw err;
-  }
-  return result ? [result] : [];
+  // _id = (_id + "").toLowerCase();
+  // var newName = password;
+  // password = encPassword(password);
+  // console.log(_id);
+  // let result;
+  // try {
+  //   result = await user__DB.addData({
+  //     ...user,
+  //     _id,
+  //     newName,
+  //     deleted: false,
+  //     password,
+  //     _createdOn: new Date().getTime(),
+  //   });
+  // } catch (err) {
+  //   console.log(err);
+  //   err = new Error() as any;
+  //   err.message = "Username already exists";
+  //   err.code = "Username already exists";
+  //   throw err;
+  // }
+  // return result ? [result] : [];
   return null;
 });
 

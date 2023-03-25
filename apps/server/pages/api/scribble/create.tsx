@@ -8,7 +8,7 @@ export default Wrapper(async (req: NextApiRequest) => {
   // const { message, from, to } = req.body || {};
   // const { _id: userId } = to || {};
   // if (!message || !to || !userId) {
-  //   let err = new Error();
+  //   let err = new Error() as any;;
   //   err.message = "Insufficient Params";
 
   //   throw err;
@@ -17,7 +17,7 @@ export default Wrapper(async (req: NextApiRequest) => {
 
   // let to_user = await db.collection(TABLES.user).findOne({ _id: userId });
   // if (!to_user || !to_user[0]) {
-  //   let err = new Error();
+  //   let err = new Error() as any;;
   //   err.message = "User Not Found";
   //   throw err;
   // }

@@ -1,59 +1,34 @@
+"use client";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-// import { validateLogin, createUser } from "../sampleData/loginSetup";
-// import ErrorScreen from "./sectionComponents/ErrorScreen";
-const uuid = require("uuid").v4;
-const deviceUuid = "messageOption";
-// import DirectSignIn from "./sectionComponents/DirectSignIn";
-const Login = () => {
-  const [error, errorUpdater] = useState(false);
-  const [isLogin, isLoginUpdater] = useState(true);
-  //   const [width, widthUpdater] = useState(1024);
-  //   const updateWindowDimensions = () => {
-  //     widthUpdater(window.innerWidth);
-  //   };
-  const errorUpdater_ = (x) => errorUpdater(x);
-  //   useEffect(() => {
-  //     window.addEventListener("resize", updateWindowDimensions);
-  //     return () => {
-  //       window.removeEventListener("resize", updateWindowDimensions);
-  //     };
-  //   }, []);
+import { validateLogin } from "../helper/AxiosCall";
+import { useAppStore } from "../stores/AppStore";
+import { useForm } from "react-hook-form";
+import { useRouter } from "next/router";
+import { setInfo } from "toast-modal";
 
+const Login = () => {
+  const [error, errorUpdater] = useState<string | null>(null);
+  const [isLogin, isLoginUpdater] = useState(true);
+  const errorUpdater_ = (x: string) => errorUpdater(x);
   const SwitchLogin = () => {
     isLoginUpdater(!isLogin);
   };
-  //   const getWidth = (width) => {
-  //     if (width < 500) {
-  //       return "80%";
-  //     }
-  //     if (width > 800) {
-  //       return 800;
-  //     }
-  //     return width - 200;
-  //   };
-  // console.log(width);
+  const user = useAppStore((state) => state.user);
+  const router = useRouter();
+  useEffect(() => {
+    setInfo("this is toast", 10000);
+
+    if (user) {
+      router.push("/");
+    }
+  }, [user]);
   return (
-    <>
-      <div
-        style={{
-          marginTop: "20px",
-          margin: "auto",
-          width: "80%",
-          alignItems: "center",
-          display: "flex",
-          justifyContent: "center",
-          flexDirection: "column",
-        }}
-      >
-        <div style={{ width: "100%" }}>
+    <div className="container-fluid h-custom">
+      <div className="row d-flex justify-content-center align-items-center h-100">
+        <div className="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
           {error && (
-            <ErrorScreen
-              error={error}
-              onClick={() => {
-                errorUpdater(false);
-              }}
-            />
+            <ErrorScreen error={error} onClick={() => errorUpdater(null)} />
           )}
 
           {isLogin ? (
@@ -66,32 +41,34 @@ const Login = () => {
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
-const LoginWrapper = (props) => {
-  const userUpdater = props?.userUpdate;
+const LoginWrapper = (props: any) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+  const setUser = useAppStore((state) => state.setUser);
   const [author, authorUpdater] = useState("");
   const [message, messageUpdater] = useState("");
   const [alertzz, alertUpdater] = useState(false);
   const [loading, loadingUpdater] = useState(false);
 
-  const setAuthor = (e) => {
-    e.preventDefault();
+  const setAuthor = (e: any) => {
     alertUpdater(false);
     authorUpdater(e.target.value);
   };
 
-  const setMessage = (e) => {
-    e.preventDefault();
+  const setMessage = (e: any) => {
     alertUpdater(false);
     messageUpdater(e.target.value);
   };
 
-  const handelSubmit = async (e) => {
+  const handelSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
-      e.preventDefault();
       if (loading) {
         return;
       }
@@ -111,10 +88,11 @@ const LoginWrapper = (props) => {
       };
       loadingUpdater(true);
       let resp = await validateLogin(newLogin);
+      console.log("🚀 ~ file: login.tsx:112 ~ handelSubmit ~ resp:", resp);
       if (resp && resp.length) {
         resp = resp[0];
         resp["username"] = resp.username || resp._id;
-        userUpdater(resp);
+        setUser(resp);
       } else {
         props.errorUpdater &&
           props.errorUpdater({
@@ -129,64 +107,50 @@ const LoginWrapper = (props) => {
     }
   };
   return (
-    <>
-      <div>
-        <form onSubmit={handelSubmit}>
-          <h3>Sign In</h3>
+    <form onSubmit={handelSubmit}>
+      <h3>Sign In</h3>
 
-          <div className="form-group">
-            <label>Username</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Enter username"
-              autoFocus={true}
-              onChange={setAuthor}
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Password</label>
-            <input
-              type="password"
-              className="form-control"
-              placeholder="Enter password"
-              onChange={setMessage}
-            />
-          </div>
-
-          {/* <div className="form-group">
-              <div className="custom-control custom-checkbox">
-              <input type="checkbox" className="custom-control-input" id="customCheck1" />
-              <label className="custom-control-label" htmlFor="customCheck1">
-              Remember me
-              </label>
-              </div>
-            </div> */}
-
-          <button type="submit" className="btn-primary btn-block">
-            {loading ? "Getting Info" : "Submit"}
-          </button>
-          <p className="forgot-password text-right">
-            {alertzz && "Please fill all * fields"}
-            Forgot <Link href="/contact">password? Contact Admin</Link>
-          </p>
-          <p className="forgot-password text-right">
-            Don&apos;t have an account{" "}
-            <Link href="/login#signup" onClick={props.SwitchLogin}>
-              sign up?
-            </Link>
-          </p>
-        </form>
+      <div className="form-group">
+        <label>Username</label>
+        <input
+          type="text"
+          className="form-control"
+          placeholder="Enter username"
+          autoFocus={true}
+          onChange={setAuthor}
+        />
       </div>
-      <div>{/* <DirectSignIn {...props} /> */}</div>
-    </>
+
+      <div className="form-group">
+        <label>Password</label>
+        <input
+          type="password"
+          className="form-control"
+          placeholder="Enter password"
+          onChange={setMessage}
+        />
+      </div>
+
+      <button type="submit" className="btn-primary btn-block">
+        {loading ? "Getting Info" : "Submit"}
+      </button>
+      <p className="forgot-password text-right">
+        {alertzz && "Please fill all * fields"}
+        Forgot <Link href="/contact">password? Contact Admin</Link>
+      </p>
+      <p className="forgot-password text-right">
+        Don&apos;t have an account{" "}
+        <Link href="/login#signup" onClick={props.SwitchLogin}>
+          sign up?
+        </Link>
+      </p>
+    </form>
   );
 };
 
 export default Login;
 
-const Signup = (props) => {
+const Signup = (props: any) => {
   const userUpdater = props.userUpdate;
   const [author, authorUpdater] = useState("");
   const [message, messageUpdater] = useState("");
@@ -194,7 +158,7 @@ const Signup = (props) => {
   const [loading, loadingUpdater] = useState(false);
   const [alertzz, alertUpdater] = useState(false);
 
-  const setAuthor = (e) => {
+  const setAuthor = (e: any) => {
     e.preventDefault();
     alertUpdater(false);
     const val = e.target.value;
@@ -202,28 +166,28 @@ const Signup = (props) => {
     // console.log(val.match("^[a-zA-Z0-9_@]*$"));
   };
 
-  const setMessage = (e) => {
+  const setMessage = (e: any) => {
     e.preventDefault();
     alertUpdater(false);
     messageUpdater(e.target.value);
   };
-  const setPassword = (e) => {
+  const setPassword = (e: any) => {
     e.preventDefault();
     alertUpdater(false);
     passwordUpdater(e.target.value);
   };
 
-  const handelSubmit = async (e) => {
+  const handelSubmit = async (e: any) => {
     try {
       e.preventDefault();
       if (loading) {
         return;
       }
-      let deviceId = localStorage.getItem(deviceUuid);
-      if (!deviceId) {
-        deviceId = uuid();
-        localStorage.setItem(deviceUuid, deviceId);
-      }
+      // let deviceId = localStorage.getItem(deviceUuid);
+      // if (!deviceId) {
+      //   deviceId = uuid();
+      //   localStorage.setItem(deviceUuid, deviceId);
+      // }
       alertUpdater(false);
       if (
         !password ||
@@ -254,17 +218,17 @@ const Signup = (props) => {
         username: author,
         _id: author,
         device: {
-          _id: deviceId,
+          // _id: deviceId,
         },
       };
       loadingUpdater(true);
-      let result = await createUser(newLogin);
-      console.log(result);
-      // alert(JSON.stringify(newLogin));
+      // let result = await createUser(newLogin);
+      // console.log(result);
+      // // alert(JSON.stringify(newLogin));
       userUpdater(newLogin);
       loadingUpdater(false);
       return;
-    } catch (err) {
+    } catch (err: any) {
       loadingUpdater(false);
       console.log(err);
       props.errorUpdater && props.errorUpdater({ name: err.message });
@@ -322,7 +286,7 @@ const Signup = (props) => {
   );
 };
 
-const ErrorScreen = (props) => {
+const ErrorScreen = (props: any) => {
   const onClick = props.onClick;
   let error = props.error;
   if (!onClick || !error || !(error instanceof Object)) {

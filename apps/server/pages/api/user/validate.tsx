@@ -21,7 +21,7 @@ const validateUser = async (req) => {
   const { username, password, device = false } = req.body;
 
   if (!username || !password) {
-    let err = new Error();
+    let err = new Error() as any;;
     err.message = "Insufficient Params";
     err.code = "Insufficient Params";
     return err;

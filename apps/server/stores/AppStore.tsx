@@ -1,10 +1,11 @@
 import { create } from "zustand";
 import { IUser } from "../types";
+import { GetResult } from "@fingerprintjs/fingerprintjs";
 
 interface IAppStore {
   user: null | IUser;
   setUser: (user: null | IUser) => void;
-  deviceInfo: any;
+  deviceInfo: null | (GetResult & { deviceId: string });
   setDeviceInfo: (deviceInfo: any) => void;
   isMessageSent: boolean;
   setIsMessageSent: (isMessageSent: any) => void;

@@ -1,0 +1,19 @@
+{
+  "name": "toast-modal",
+  "version": "1.0.0",
+  "main": "./index.tsx",
+  "types": "./index.tsx",
+  "license": "ISC",
+  "scripts": {
+    "lint": "eslint \"**/*.ts*\""
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.22",
+    "eslint": "^7.32.0",
+    "eslint-config-custom": "*",
+    "react": "^18.2.0",
+    "tsconfig": "*",
+    "typescript": "^4.5.2",
+    "zustand": "^4.3.6"
+  }
+}

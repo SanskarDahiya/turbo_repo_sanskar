@@ -12,10 +12,12 @@ import "./../src/css/ionicons.min.css";
 import "./../src/css/flaticon.css";
 import "./../src/css/icomoon.css";
 import "./../src/css/style.css";
+import ToastModal from "toast-modal";
 
 import { AppPropsType } from "next/dist/shared/lib/utils";
 import Link from "next/link";
 import { useAppStore } from "../stores/AppStore";
+import getFingerprint from "../helper/getFingerprint";
 
 export const menuBar = [
   { name: "Home", link: "/" },
@@ -26,6 +28,9 @@ export default function MyApp({ Component, pageProps }: AppPropsType) {
   const user = useAppStore((state) => state.user);
   const setUser = useAppStore((state) => state.setUser);
   useEffect(() => {
+    getFingerprint().then((res) => {
+      useAppStore.getState().setDeviceInfo({ ...res, deviceId: res.visitorId });
+    });
     // setUser({
     //   _id: "user_id",
     //   _createdOn: new Date().getTime(),
@@ -65,7 +70,8 @@ export default function MyApp({ Component, pageProps }: AppPropsType) {
           const divElem = document.getElementById(
             "all_scripts"
           ) as HTMLDivElement;
-          // divElem.appendChild(elem);
+          //FIXME:
+          divElem.appendChild(elem);
         }
       });
     }, 250);
@@ -136,12 +142,32 @@ export default function MyApp({ Component, pageProps }: AppPropsType) {
       </nav>
       <div
         style={{
+          zIndex: "1",
           flex: 1,
           height: "100%",
           width: "100%",
         }}
       >
-        <Component {...pageProps} />
+        <div
+          style={{
+            position: "relative",
+            zIndex: "2",
+            height: "100%",
+            width: "100%",
+          }}
+        >
+          <ToastModal />
+        </div>
+        <div
+          style={{
+            position: "relative",
+            zIndex: "1",
+            height: "100%",
+            width: "100%",
+          }}
+        >
+          <Component {...pageProps} />
+        </div>
       </div>
 
       <footer
