@@ -5,11 +5,7 @@ if (!uri) {
   throw new Error('Invalid/Missing environment variable: "MONGODB_URI"');
 }
 
-const options = {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverApi: ServerApiVersion.v1,
-};
+const options = { useNewUrlParser: true, useUnifiedTopology: true };
 
 let client;
 let clientPromise: Promise<MongoClient>;

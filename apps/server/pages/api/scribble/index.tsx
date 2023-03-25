@@ -1,8 +1,8 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import getClient from "mongo-client";
+import { Wrapper } from "../../../helper";
+import fs from "fs";
+export default Wrapper(async () => {
+  const c = await getClient();
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<string>
-) {
-  res.status(200).end(JSON.stringify({ success: true }));
-}
+  return { success: true, c: !!c };
+});
