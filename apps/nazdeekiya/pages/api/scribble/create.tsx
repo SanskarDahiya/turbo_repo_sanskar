@@ -61,6 +61,32 @@ export default Wrapper(async (req: NextApiRequest) => {
     comments: [],
   };
 
+  if (fromUser?._id) {
+    await db.collection(TABLES.user).findOneAndUpdate(
+      // @ts-ignore
+      { _id: fromUser._id },
+      {
+        $set: {
+          _updatedOn: new Date(),
+        },
+        $inc: {
+          sendMessageCount: 1,
+        },
+      }
+    );
+  }
+  await db.collection(TABLES.user).findOneAndUpdate(
+    // @ts-ignore
+    { _id: to },
+    {
+      $set: {
+        _updatedOn: new Date(),
+      },
+      $inc: {
+        getMessageCount: 1,
+      },
+    }
+  );
   // @ts-ignore
   await db.collection(TABLES.scribble).insertOne(scribbleData);
   return { success: true };
