@@ -16,9 +16,17 @@ export const validateLogin = ({
 //   return await fetch("user/getUserById", { _id });
 // };
 
-// export const createUser = async (user) => {
-//   return await fetch("user/create", { user });
-// };
+export const createUser = async ({
+  username,
+  password,
+  email,
+}: {
+  email: string;
+  username: string;
+  password: string;
+}) => {
+  return await fetch("/user/create", { username, password, email });
+};
 
 // export const sendMessage = async (data) => {
 //   if (data && data.to && data.message) {
@@ -55,7 +63,7 @@ const fetch = async (url: string | URL, params: any) => {
   const result = await Axios({
     method: "post",
     url: url,
-    data: JSON.stringify(params),
+    data: params,
     headers: {
       "x-platform": "web",
       "x-request-id": visitorId,

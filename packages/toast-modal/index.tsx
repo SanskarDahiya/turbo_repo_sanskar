@@ -1,3 +1,4 @@
+import "./index.css";
 import React, { useEffect, useMemo, useState } from "react";
 import { useToastStore } from "./store";
 import { ToastMessage } from "./types";
@@ -147,35 +148,18 @@ const SingleToastModal = ({ toast, index }: SingleToastModalProps) => {
       }}
     >
       {({ closeModal }) => (
-        <div
-          style={{
-            display: "flex",
-            width: "24rem",
-            margin: "1rem 0",
-            borderRadius: "0.5rem",
-            boxShadow:
-              "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
-          }}
-        >
+        <div className="parent-container">
           {AlertIcon(toast)}
-          <div
-            style={{
-              padding: "1.25rem 1rem",
-              background: "white",
-              borderTopRightRadius: "0.5rem",
-              borderBottomRightRadius: "0.5rem",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              width: "100%",
-              border: "1px solid rgb(229 231 235)",
-              borderLeftColor: "transparent",
-            }}
-          >
-            <div>
-              <div>{toast.message}</div>
-            </div>
-            <button style={{ alignSelf: "self-start" }} onClick={closeModal}>
+          <div className="toast-message">
+            <div>{toast.message}</div>
+            <button
+              style={{
+                alignSelf: "self-start",
+                background: "none",
+                border: "0px",
+              }}
+              onClick={closeModal}
+            >
               <svg
                 style={{
                   color: "rgb(55 65 81)",
@@ -207,8 +191,6 @@ function ToastModal() {
   return (
     <div
       style={{
-        padding: "0 2rem",
-        margin: "1rem 0",
         position: "absolute",
       }}
     >

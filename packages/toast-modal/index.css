@@ -1,0 +1,29 @@
+.parent-container {
+  display: flex;
+  width: 24rem;
+  margin: 1rem 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+.toast-message {
+  padding: 1.25rem 1rem;
+  background: white;
+  border-top-right-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  border: 1px solid rgb(229 231 235);
+  border-left-color: transparent;
+}
+
+@media (max-width: 600px) {
+  .toast-message {
+    padding: 0.75rem;
+  }
+  .parent-container {
+    margin: 1rem;
+    width: calc(100vw - 2.15rem);
+  }
+}

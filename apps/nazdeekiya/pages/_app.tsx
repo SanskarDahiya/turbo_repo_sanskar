@@ -71,7 +71,7 @@ export default function MyApp({ Component, pageProps }: AppPropsType) {
             "all_scripts"
           ) as HTMLDivElement;
           //FIXME:
-          divElem.appendChild(elem);
+          // divElem.appendChild(elem);
         }
       });
     }, 250);

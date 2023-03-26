@@ -3,18 +3,16 @@ import { NextApiRequest, NextApiResponse } from "next";
 export const Wrapper = (
   cb: (req: NextApiRequest, res: NextApiResponse) => any
 ) => {
-  return (req: NextApiRequest, res: NextApiResponse) => {
+  return async (req: NextApiRequest, res: NextApiResponse) => {
     try {
-      const result = cb(req, res);
+      const result = await cb(req, res);
       if (result instanceof Error) {
         throw result;
       }
       res
         .status(200)
         .end(typeof result !== "string" ? JSON.stringify(result) : result);
-    } catch (_err) {
-      console.log("🚀 ~ file: index.tsx:16 ~ return ~ _err:", _err);
-      const err = _err as any;
+    } catch (err: any) {
       const error_code = err?.code;
       const error_message = err?.message;
       res.status(518).end(

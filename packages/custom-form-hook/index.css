@@ -1,0 +1,36 @@
+.form-group {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  width: 100%;
+  padding-top: 1rem;
+}
+
+.input-form-control {
+  z-index: 1;
+  font-size: 14px;
+  background: transparent !important;
+  width: 100%;
+  margin: 0.5rem 0.25rem;
+}
+
+.input-label {
+  z-index: -1;
+  position: absolute;
+  bottom: 0.15rem;
+  left: 4px;
+  background: transparent;
+  transition: all 150ms ease-in-out;
+  font-size: 14px;
+}
+
+.input-form-control::placeholder {
+  color: transparent;
+  opacity: 0;
+}
+
+.input-label:has(+ .input-form-control:focus),
+.input-label:has(+ .input-form-control:not(:placeholder-shown)) {
+  bottom: 2rem;
+  left: 0.25rem;
+}

@@ -1,7 +1,7 @@
 interface common_mongo {
   _id: string;
-  _createdOn: number;
-  _updatedOn: number;
+  _createdOn: number | Date;
+  _updatedOn: number | Date;
   deleted?: boolean;
 }
 
