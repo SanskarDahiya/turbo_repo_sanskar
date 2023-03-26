@@ -1,10 +1,7 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Link from "next/link";
 import { useAppStore } from "../stores/AppStore";
-import SingleMessageCard from "../components/SingleMessageCard";
-import { IScribble } from "../types";
-import { SITE_URL } from "../constants";
 
 const Index = () => {
   return (

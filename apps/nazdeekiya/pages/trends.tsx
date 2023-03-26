@@ -66,8 +66,12 @@ const Trends = () => {
                       style={{
                         color: "#666666",
                       }}
+                      suppressHydrationWarning
                     >
-                      {SITE_URL}/user/
+                      {typeof window !== "undefined"
+                        ? window.location.origin
+                        : SITE_URL}
+                      /user/
                       <span style={{ color: "#e83e8c" }}>nazdeekiyaan</span>
                     </code>{" "}
                     or click here

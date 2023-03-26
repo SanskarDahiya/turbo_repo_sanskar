@@ -27,7 +27,10 @@ const ShowMessages = () => {
   const user = useAppStore((state) => state.user);
   const messages = useAppStore((state) => state.messages);
   const setMessages = useAppStore((state) => state.setMessages);
-  const userLink = `${SITE_URL}/user/${user?._id}`;
+
+  const userLink = `${
+    typeof window !== "undefined" ? window.location.origin : SITE_URL
+  }/user/${user?._id}`;
   const [isFetching, setIsFetching] = useState(true);
   const isUserPresent = !!user?._id;
   async function fetchData() {
@@ -62,7 +65,7 @@ const ShowMessages = () => {
           <h2 className="mb-3">{"Welcome #" + user?.name}</h2>
           <code>
             Share this message:{" "}
-            <code>
+            <code suppressHydrationWarning>
               <Link href={userLink} target="_new">
                 Hey There, Let&apos;s celebrate scribble day in a new way.
                 <br />
