@@ -3,10 +3,11 @@ import { NextApiRequest } from "next";
 import { TABLES } from "../../../constants";
 import { Wrapper } from "../../../helper";
 import { compare } from "../../../helper/encrypt";
+import { GenerateNewToken } from "../../../helper/generateTokens";
 import { IUser } from "../../../types";
 
 export default Wrapper(async function handler(req: NextApiRequest) {
-  const requestId = req.headers["x-request-id"];
+  const requestId = req.headers["x-request-id"] as string;
   const { username, password } = req.body;
   if (
     !username ||
@@ -18,7 +19,6 @@ export default Wrapper(async function handler(req: NextApiRequest) {
   ) {
     throw new Error("Invalid Username or Password");
   }
-
   const db = await getClientDb();
   const userInfo = (await db
     .collection(TABLES.user)
@@ -31,7 +31,10 @@ export default Wrapper(async function handler(req: NextApiRequest) {
     throw new Error("User is Banned!!. please contact admin");
   }
 
-  const comparePassword = await compare(password, userInfo.password);
+  const comparePassword = await compare(
+    password + "__" + username,
+    userInfo.password
+  );
 
   if (!comparePassword) {
     throw new Error("Username or Password did not match");
@@ -41,9 +44,12 @@ export default Wrapper(async function handler(req: NextApiRequest) {
     await db.collection(TABLES.user).findOneAndUpdate(
       // @ts-ignore
       { _id: userInfo._id },
-      { $set: { deviceId: requestId } }
+      { $set: { device: requestId, _updatedOn: new Date() } }
     );
   }
-
-  return JSON.stringify({ success: true });
+  const result = await GenerateNewToken({
+    ...userInfo,
+    device: requestId || userInfo.device,
+  });
+  return JSON.stringify({ success: true, ...result });
 });

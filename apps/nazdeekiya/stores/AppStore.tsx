@@ -3,6 +3,8 @@ import { IUser } from "../types";
 import { GetResult } from "@fingerprintjs/fingerprintjs";
 
 interface IAppStore {
+  access_token: string | null;
+  refresh_token: string | null;
   user: null | IUser;
   setUser: (user: null | IUser) => void;
   deviceInfo: null | (GetResult & { deviceId: string });
@@ -12,6 +14,8 @@ interface IAppStore {
 }
 
 const store = (set: any) => ({
+  access_token: null,
+  refresh_token: null,
   user: null,
   setUser: (user: any) => set({ user }),
   deviceInfo: null,

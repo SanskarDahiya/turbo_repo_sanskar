@@ -5,6 +5,17 @@ interface common_mongo {
   deleted?: boolean;
 }
 
+export const modifyUser = (user: IUser) => {
+  return {
+    _id: user._id,
+    _createdOn: user._createdOn,
+    _updatedOn: user._updatedOn,
+    name: user.name,
+    username: user.username,
+    old_names: user.old_names,
+    isAnonymous: user.isAnonymous,
+  };
+};
 export interface IUser extends common_mongo {
   username: string;
   password: string;

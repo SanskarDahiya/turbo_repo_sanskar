@@ -5,9 +5,10 @@ import { TABLES } from "../../../constants";
 import { Wrapper } from "../../../helper";
 import { encrypt } from "../../../helper/encrypt";
 import { IUser } from "../../../types";
+import { GenerateNewToken } from "../../../helper/generateTokens";
 
 export default Wrapper(async (req: NextApiRequest) => {
-  const requestId = req.headers["x-request-id"];
+  const requestId = req.headers["x-request-id"] as string;
   const { username, password, email } = req.body;
 
   if (
@@ -35,9 +36,8 @@ export default Wrapper(async (req: NextApiRequest) => {
     }
   }
 
-  const actualPassword = await encrypt(password);
-
-  await db.collection(TABLES.user).insertOne({
+  const actualPassword = await encrypt(password + "__" + username);
+  const userInfo: IUser = {
     _id: username,
     _createdOn: new Date(),
     _updatedOn: new Date(),
@@ -50,7 +50,9 @@ export default Wrapper(async (req: NextApiRequest) => {
     isAnonymous: false,
     sendMessageCount: 0,
     getMessageCount: 0,
-  });
-
-  return { success: true };
+  };
+  // @ts-ignore
+  await db.collection(TABLES.user).insertOne(userInfo);
+  const result = await GenerateNewToken(userInfo);
+  return { success: true, ...result };
 });

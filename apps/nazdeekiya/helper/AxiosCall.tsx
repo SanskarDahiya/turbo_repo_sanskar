@@ -1,17 +1,51 @@
 import Axios from "axios";
 import { useAppStore } from "../stores/AppStore";
+import { IUser } from "../types";
 import getFingerprint from "./getFingerprint";
+const handleTokens = async ({
+  access_token,
+  refresh_token,
+  user,
+}: {
+  user: IUser;
+  access_token: string;
+  refresh_token: string;
+}) => {
+  useAppStore.getState().setUser(user);
+  useAppStore.setState({ access_token, refresh_token });
+  localStorage.setItem("access_token", access_token);
+  localStorage.setItem("refresh_token", refresh_token);
+};
 
-export const validateLogin = ({
+export const validateLogin = async ({
   username,
   password,
 }: {
   username: string;
   password: string;
 }) => {
-  return fetch("/user/validate", { username, password });
+  const result = await fetch("/user/validate", { username, password });
+  const { access_token, refresh_token, user } = result;
+  await handleTokens({ access_token, refresh_token, user });
+  return result;
 };
 
+export const handleSSOUser = async () => {
+  try {
+    const result = await fetch("/user", {});
+    const { access_token, refresh_token, user } = result;
+    if (access_token && refresh_token && user) {
+      await handleTokens({ access_token, refresh_token, user });
+    } else {
+      useAppStore.getState().setUser(null);
+      useAppStore.setState({ access_token: null, refresh_token: null });
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+    }
+  } catch (err) {
+    console.log("🚀 ~ file: AxiosCall.tsx:39 ~ handleSSOUser ~ err:", err);
+  }
+};
 // export const getUserByUserId = async (_id) => {
 //   return await fetch("user/getUserById", { _id });
 // };
@@ -25,7 +59,10 @@ export const createUser = async ({
   username: string;
   password: string;
 }) => {
-  return await fetch("/user/create", { username, password, email });
+  const result = await fetch("/user/create", { username, password, email });
+  const { access_token, refresh_token, user } = result;
+  await handleTokens({ access_token, refresh_token, user });
+  return result;
 };
 
 // export const sendMessage = async (data) => {
@@ -60,14 +97,25 @@ const fetch = async (url: string | URL, params: any) => {
   } catch (err) {
     visitorId = "x-error-encounter";
   }
+  let access_token = useAppStore.getState().access_token;
+  if (!access_token) {
+    access_token = localStorage.getItem("access_token") || null;
+    const refresh_token = localStorage.getItem("refresh_token") || null;
+    useAppStore.setState({ access_token, refresh_token });
+  }
+
+  const headers: any = {
+    "x-platform": "web",
+    "x-request-id": visitorId,
+  };
+  if (access_token) {
+    headers["Authorization"] = access_token;
+  }
   const result = await Axios({
     method: "post",
     url: url,
     data: params,
-    headers: {
-      "x-platform": "web",
-      "x-request-id": visitorId,
-    },
+    headers: { ...headers },
   });
   const { data = [] } = result || {};
   if (data.error) {

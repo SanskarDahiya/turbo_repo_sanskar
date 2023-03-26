@@ -1,18 +1,9 @@
-// const express = require("express");
-// const router = express.Router();
-// const { userDB, scribbleDB, connectionDB } = require("../Schemas/index");
-// const { getMethods, getAllData } = require("../apis/index");
-// const { serverPrefix } = require("../apis/serverHoc");
-// const { encPassword } = require("../apis/encryption");
-// const mongoose = require("mongoose");
-// const ObjectId = mongoose.Types.ObjectId;
-// const uuid = require("uuid").v4;
-// const user__DB = getMethods(userDB);
-// const scribble__DB = getMethods(scribbleDB);
-// const conn = getMethods(connectionDB);
-// const fs = require("fs");
-
+import getClient, { getClientDb } from "mongo-client";
+import { NextApiRequest } from "next";
+import { TABLES } from "../../../constants";
 import { Wrapper } from "../../../helper";
+import { GenerateNewToken } from "../../../helper/generateTokens";
+import { IConnection, IUser, modifyUser } from "../../../types";
 
 // // user__DB.getAllData({}).then(res => {
 // //   res.map(user => {
@@ -224,4 +215,43 @@ import { Wrapper } from "../../../helper";
 
 // module.exports = router;
 
-export default Wrapper(() => false);
+export default Wrapper(async (req: NextApiRequest) => {
+  const access_token = req.headers.authorization as string;
+  if (!access_token) {
+    return { success: false, message: "No Token Present" };
+  }
+  const db = await getClientDb();
+  const connInfo = (await db
+    .collection(TABLES.connection)
+    .findOne({ access_token: access_token })) as unknown as IConnection | null;
+  if (!connInfo) {
+    return { success: false, message: "No Token Found" };
+  }
+  const createdDate = new Date(connInfo._createdOn).getTime();
+  const currTime = new Date().getTime();
+
+  const timesCreated = Number(((currTime - createdDate) / 1000).toFixed(0));
+  const userInfo = (await db
+    .collection(TABLES.user)
+    // @ts-ignore
+    .findOne({ _id: connInfo.userId })) as unknown as IUser | null;
+  if (!userInfo || userInfo.deleted) {
+    return {
+      success: false,
+      message: "User Not Found",
+      isDeleted: !!userInfo?.deleted,
+    };
+  }
+
+  if (timesCreated < (connInfo.duration || 3600)) {
+    return {
+      success: true,
+      access_token: connInfo.access_token,
+      refresh_token: connInfo.refresh_token,
+      user: modifyUser(userInfo),
+    };
+  }
+
+  const result = await GenerateNewToken(userInfo);
+  return { success: true, ...result };
+});

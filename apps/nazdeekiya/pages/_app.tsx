@@ -18,6 +18,7 @@ import { AppPropsType } from "next/dist/shared/lib/utils";
 import Link from "next/link";
 import { useAppStore } from "../stores/AppStore";
 import getFingerprint from "../helper/getFingerprint";
+import { handleSSOUser } from "../helper/AxiosCall";
 
 export const menuBar = [
   { name: "Home", link: "/" },
@@ -26,25 +27,16 @@ export const menuBar = [
 
 export default function MyApp({ Component, pageProps }: AppPropsType) {
   const user = useAppStore((state) => state.user);
-  const setUser = useAppStore((state) => state.setUser);
+  const deviceId = useAppStore((state) => state.deviceInfo?.deviceId);
+  useEffect(() => {
+    if (deviceId) {
+      handleSSOUser();
+    }
+  }, [deviceId]);
   useEffect(() => {
     getFingerprint().then((res) => {
       useAppStore.getState().setDeviceInfo({ ...res, deviceId: res.visitorId });
     });
-    // setUser({
-    //   _id: "user_id",
-    //   _createdOn: new Date().getTime(),
-    //   _updatedOn: new Date().getTime(),
-    //   deleted: false,
-    //   username: "user_username",
-    //   password: "user_password",
-    //   name: "user_name",
-    //   old_names: [],
-    //   device: "user_device",
-    //   isAnonymous: false,
-    //   sendMessageCount: 0,
-    //   getMessageCount: 0,
-    // });
     const timer = setTimeout(() => {
       const libs = [
         "jquery.min.js",
@@ -71,7 +63,7 @@ export default function MyApp({ Component, pageProps }: AppPropsType) {
             "all_scripts"
           ) as HTMLDivElement;
           //FIXME:
-          // divElem.appendChild(elem);
+          divElem.appendChild(elem);
         }
       });
     }, 250);
@@ -126,7 +118,16 @@ export default function MyApp({ Component, pageProps }: AppPropsType) {
                     style={{
                       cursor: "pointer",
                     }}
-                    onClick={() => setUser(null)}
+                    onClick={() => {
+                      useAppStore.getState().setUser(null);
+                      useAppStore.setState({
+                        access_token: null,
+                        refresh_token: null,
+                      });
+                      localStorage.removeItem("access_token");
+                      localStorage.removeItem("refresh_token");
+                    }}
+                    role="presentation"
                   >
                     <span id="username1">Sign-Out: {user?.name}</span>
                   </div>
