@@ -6,6 +6,7 @@ import SingleMessageCard from "../components/SingleMessageCard";
 import { SITE_URL } from "../constants";
 import { getAllMessages } from "../helper/AxiosCall";
 import { useRouter } from "next/router";
+import Head from "next/head";
 
 const MyMessages = () => {
   return (
@@ -58,6 +59,15 @@ const ShowMessages = () => {
   }, [isUserPresent, isLoading]);
   return (
     <>
+      {isUserPresent ? (
+        <Head>
+          <title>Nazdeekiyaan | User {user.username}</title>
+        </Head>
+      ) : (
+        <Head>
+          <title>Nazdeekiyaan | User</title>
+        </Head>
+      )}
       <div className="row">
         <div className="col-lg-8 ">
           <h2 className="mb-3">{"Welcome #" + user?.name}</h2>

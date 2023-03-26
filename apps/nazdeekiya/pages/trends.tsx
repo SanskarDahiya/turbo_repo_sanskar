@@ -4,6 +4,7 @@ import SingleMessageCard from "../components/SingleMessageCard";
 import { useAppStore } from "../stores/AppStore";
 import { SITE_URL } from "../constants";
 import { getPublicMessages } from "../helper/AxiosCall";
+import Head from "next/head";
 
 const Trends = () => {
   const user = useAppStore((state) => state.user);
@@ -31,6 +32,9 @@ const Trends = () => {
 
   return (
     <>
+      <Head>
+        <title>Nazdeekiyaan | Trends</title>
+      </Head>
       <section className="ftco-section">
         <div className="container">
           <div className="row">

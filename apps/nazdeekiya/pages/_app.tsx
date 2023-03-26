@@ -19,10 +19,10 @@ import Link from "next/link";
 import { useAppStore } from "../stores/AppStore";
 import getFingerprint from "../helper/getFingerprint";
 import { handleSSOUser } from "../helper/AxiosCall";
+import Head from "next/head";
 
 export default function MyApp({ Component, pageProps }: AppPropsType) {
   const user = useAppStore((state) => state.user);
-  const deviceId = useAppStore((state) => state.deviceInfo?.deviceId);
   const access_token = useAppStore((state) => state.access_token);
   let menuBar = [
     { name: "Home", link: "/" },
@@ -93,6 +93,10 @@ export default function MyApp({ Component, pageProps }: AppPropsType) {
   }, []);
   return (
     <div className="parentContainer">
+      <Head>
+        <title>Nazdeekiyaan</title>
+        <meta name="description" content="Used to send anounomus messages." />
+      </Head>
       <div className="bg-top navbar-light">
         <div className="container">
           <div className="row no-gutters d-flex align-items-center align-items-stretch">
