@@ -7,12 +7,21 @@ import { encrypt } from "./encrypt";
 export const GenerateNewToken = async (user: IUser) => {
   const db = await getClientDb();
 
+  await db.collection(TABLES.connection).updateMany(
+    { userId: user._id, deleted: false },
+    {
+      $set: {
+        deleted: true,
+        _updatedOn: new Date(),
+        access_token: "",
+        refresh_token: "",
+      },
+    }
+  );
+
   await db
     .collection(TABLES.connection)
-    .updateMany(
-      { userId: user._id, deleted: false },
-      { $set: { deleted: true, _updatedOn: new Date() } }
-    );
+    .deleteMany({ userId: user._id, deleted: true });
 
   const accessToken = await encrypt(user._id + "__user_access_token");
   const refreshToken = await encrypt(user._id + "__user_refresh_token");

@@ -10,9 +10,10 @@ export default Wrapper(async (req: NextApiRequest) => {
     return { success: false, message: "No Token Present" };
   }
   const db = await getClientDb();
-  const connInfo = (await db
-    .collection(TABLES.connection)
-    .findOne({ access_token: access_token })) as unknown as IConnection | null;
+  const connInfo = (await db.collection(TABLES.connection).findOne({
+    access_token: access_token,
+    deleted: false,
+  })) as unknown as IConnection | null;
   if (!connInfo) {
     return { success: false, message: "No Token Found" };
   }

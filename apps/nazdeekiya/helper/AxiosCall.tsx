@@ -87,7 +87,7 @@ const fetch = async (url: string | URL, params: any) => {
   if (url instanceof URL) {
     url = url.href;
   } else {
-    url = `/api/${url}`;
+    url = `/api${url}`;
   }
   const deviceInfo = useAppStore.getState().deviceInfo;
   let visitorId = deviceInfo?.deviceId || deviceInfo?.visitorId;
