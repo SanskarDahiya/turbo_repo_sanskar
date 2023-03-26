@@ -65,7 +65,6 @@ const LoginWrapper = (props: any) => {
         username: username.trim(),
         password: passwordHash,
       });
-      console.log("🚀 ~ file: login.tsx:112 ~ handelSubmit ~ resp:", resp);
     } catch (err: any) {
       const message = err?.response?.data?.message || "something went wrong";
       throw new Error(message);
@@ -121,8 +120,6 @@ export default Login;
 
 const Signup = (props: any) => {
   const onFormSubmit = async (data: any) => {
-    console.log("🚀 ~ file: login.tsx:150 ~ onFormSubmit ~ data:", data);
-
     const { username, password, email } = data;
     if (
       !username ||

@@ -46,12 +46,8 @@ export const handleSSOUser = async () => {
     }
   } catch (err) {
     useAppStore.getState().setIsLoading(false);
-    console.log("🚀 ~ file: AxiosCall.tsx:39 ~ handleSSOUser ~ err:", err);
   }
 };
-// export const getUserByUserId = async (_id) => {
-//   return await fetch("user/getUserById", { _id });
-// };
 
 export const createUser = async ({
   username,
