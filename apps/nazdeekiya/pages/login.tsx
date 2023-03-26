@@ -143,7 +143,6 @@ const Signup = (props: any) => {
         username: username.trim(),
         password: passwordHash,
       });
-      console.log("🚀 ~ file: login.tsx:112 ~ handelSubmit ~ resp:", resp);
     } catch (err: any) {
       const message = err?.response?.data?.message || "something went wrong";
       throw new Error(message);

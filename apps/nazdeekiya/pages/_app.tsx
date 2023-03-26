@@ -20,23 +20,43 @@ import { useAppStore } from "../stores/AppStore";
 import getFingerprint from "../helper/getFingerprint";
 import { handleSSOUser } from "../helper/AxiosCall";
 
-export const menuBar = [
-  { name: "Home", link: "/" },
-  { name: "Trends", link: "/trends" },
-];
-
 export default function MyApp({ Component, pageProps }: AppPropsType) {
   const user = useAppStore((state) => state.user);
   const deviceId = useAppStore((state) => state.deviceInfo?.deviceId);
+  const access_token = useAppStore((state) => state.access_token);
+  let menuBar = [
+    { name: "Home", link: "/" },
+    { name: "Trends", link: "/trends" },
+  ];
+
+  if (user) {
+    menuBar = [
+      { name: "Home", link: "/" },
+      { name: "My Messages", link: "/messages" },
+      { name: "Trends", link: "/trends" },
+    ];
+  }
   useEffect(() => {
-    if (deviceId) {
+    if (access_token) {
       handleSSOUser();
     }
-  }, [deviceId]);
+  }, [access_token]);
   useEffect(() => {
-    getFingerprint().then((res) => {
-      useAppStore.getState().setDeviceInfo({ ...res, deviceId: res.visitorId });
-    });
+    useAppStore.getState().setIsLoading(true);
+    getFingerprint()
+      .then((res) => {
+        useAppStore
+          .getState()
+          .setDeviceInfo({ ...res, deviceId: res.visitorId });
+      })
+      .finally(() => {
+        const access_token = localStorage.getItem("access_token") || null;
+        const refresh_token = localStorage.getItem("refresh_token") || null;
+        if (!access_token) {
+          useAppStore.getState().setIsLoading(false);
+        }
+        useAppStore.setState({ access_token, refresh_token });
+      });
     const timer = setTimeout(() => {
       const libs = [
         "jquery.min.js",
@@ -63,7 +83,7 @@ export default function MyApp({ Component, pageProps }: AppPropsType) {
             "all_scripts"
           ) as HTMLDivElement;
           //FIXME:
-          divElem.appendChild(elem);
+          // divElem.appendChild(elem);
         }
       });
     }, 250);
@@ -121,6 +141,7 @@ export default function MyApp({ Component, pageProps }: AppPropsType) {
                     onClick={() => {
                       useAppStore.getState().setUser(null);
                       useAppStore.setState({
+                        messages: [],
                         access_token: null,
                         refresh_token: null,
                       });

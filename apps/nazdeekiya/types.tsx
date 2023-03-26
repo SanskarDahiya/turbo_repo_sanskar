@@ -16,6 +16,20 @@ export const modifyUser = (user: IUser) => {
     isAnonymous: user.isAnonymous,
   };
 };
+
+export const modifyScribble = (scribble: IScribble) => {
+  return {
+    _id: scribble._id,
+    _createdOn: scribble._createdOn,
+    _updatedOn: scribble._updatedOn,
+    message: scribble.message,
+    from: scribble.from,
+    to: scribble.to,
+    isPublic: scribble.isPublic,
+    comments: [],
+  };
+};
+
 export interface IUser extends common_mongo {
   username: string;
   password: string;
@@ -29,7 +43,9 @@ export interface IUser extends common_mongo {
 
 export interface IScribble extends common_mongo {
   message: string;
-  from: string;
+  from?: string;
+  fromUserId?: string;
+  deviceId: string;
   to: string;
   isPublic: boolean;
   comments: Omit<IScribble, "comment">[] | [];

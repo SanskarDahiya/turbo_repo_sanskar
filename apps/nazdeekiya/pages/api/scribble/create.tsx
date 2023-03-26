@@ -1,74 +1,67 @@
-import getClient, { getClientDb } from "mongo-client";
-import { NextApiRequest, NextApiResponse } from "next";
+import { randomUUID } from "crypto";
+import { getClientDb } from "mongo-client";
+import { NextApiRequest } from "next";
 import { TABLES } from "../../../constants";
 import { Wrapper } from "../../../helper";
+import { IConnection, IScribble, IUser } from "../../../types";
 
 export default Wrapper(async (req: NextApiRequest) => {
-  return true;
-  // const { message, from, to } = req.body || {};
-  // const { _id: userId } = to || {};
-  // if (!message || !to || !userId) {
-  //   let err = new Error() as any;;
-  //   err.message = "Insufficient Params";
+  const requestId = req.headers["x-request-id"] as string;
+  const access_token = req.headers["authorization"] as string;
+  const { message, from, to } = req.body;
+  if (!to || !message || !message.trim() || message.trim().length <= 10) {
+    throw new Error("Invalid Username or Password or Email");
+  }
+  const db = await getClientDb();
 
-  //   throw err;
-  // }
-  // const db = await getClientDb();
+  const to_user = (await db
+    .collection(TABLES.user)
+    .findOne({ _id: to })) as unknown as IUser | null;
+  if (!to_user) {
+    throw new Error("No user found to send message.");
+  }
+  let fromUser;
+  {
+    try {
+      if (access_token) {
+        const connInfo = (await db.collection(TABLES.connection).findOne({
+          access_token: access_token,
+        })) as unknown as IConnection | null;
+        if (connInfo?.userId) {
+          fromUser = (await db
+            .collection(TABLES.user)
+            // @ts-ignore
+            .findOne({ _id: connInfo.userId })) as unknown as IUser | null;
+        }
+      }
+    } catch (err) {}
+  }
 
-  // let to_user = await db.collection(TABLES.user).findOne({ _id: userId });
-  // if (!to_user || !to_user[0]) {
-  //   let err = new Error() as any;;
-  //   err.message = "User Not Found";
-  //   throw err;
-  // }
-  // if (!from["_id"] && from["deviceId"]) {
-  //   try {
-  //     const deviceInfo = await db
-  //       .collection(TABLES.user)
-  //       .findOne({ deviceId: from["deviceId"] });
-  //     let userData = await user__DB.getSingleData({
-  //       "device._id": from.device._id,
-  //     });
-  //     from["_id"] = deviceInfo["_id"];
-  //   } catch (err) {
-  //     console.log("[unable to find user from device]");
-  //   }
-  // }
-  // // if (from && from["_id"]) {
-  // //   from["_id"] = (from["_id"] + "").toLowerCase();
-  // // } else {
-  // //   if (from && from.device && from.device._id) {
-  // //     try {
-  // //       const deviceInfo = await db.collection(TABLES.user).findOne({ _id: _id });
-  // //       let userData = await user__DB.getSingleData({
-  // //         "device._id": from.device._id,
-  // //       });
-  // //       let { _id: user___ID } = userData || {};
-  // //       from = { _id: user___ID, device: from.device };
-  // //       // console.log("userData", userData, from);
-  // //     } catch (err) {
-  // //       from = { device };
-  // //     }
-  // //   }
-  // // }
-  // try {
-  //   to_user = await scribble.addData({
-  //     message,
-  //     to,
-  //     deleted: false,
-  //     from,
-  //     _createdOn: new Date().getTime(),
-  //   });
-  // } catch (err) {
-  //   throw err;
-  // }
-  // return to_user ? [to_user] : [];
+  {
+    try {
+      if (!fromUser && requestId) {
+        fromUser = (await db
+          .collection(TABLES.user)
+          .findOne({ device: requestId })) as unknown as IUser | null;
+      }
+    } catch (err) {}
+  }
+
+  const scribbleData: IScribble = {
+    _id: randomUUID(),
+    _createdOn: new Date(),
+    _updatedOn: new Date(),
+    deleted: false,
+    message: JSON.stringify(message),
+    from: from,
+    fromUserId: fromUser?._id,
+    deviceId: requestId,
+    to: to,
+    isPublic: (to_user?.username || to) === "nazdeekiyaan",
+    comments: [],
+  };
+
+  // @ts-ignore
+  await db.collection(TABLES.scribble).insertOne(scribbleData);
+  return { success: true };
 });
-
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: "500kb",
-    },
-  },
-};

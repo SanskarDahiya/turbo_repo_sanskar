@@ -11,6 +11,7 @@ const handleTokens = async ({
   access_token: string;
   refresh_token: string;
 }) => {
+  useAppStore.getState().setIsLoading(false);
   useAppStore.getState().setUser(user);
   useAppStore.setState({ access_token, refresh_token });
   localStorage.setItem("access_token", access_token);
@@ -37,12 +38,14 @@ export const handleSSOUser = async () => {
     if (access_token && refresh_token && user) {
       await handleTokens({ access_token, refresh_token, user });
     } else {
+      useAppStore.getState().setIsLoading(false);
       useAppStore.getState().setUser(null);
       useAppStore.setState({ access_token: null, refresh_token: null });
       localStorage.removeItem("access_token");
       localStorage.removeItem("refresh_token");
     }
   } catch (err) {
+    useAppStore.getState().setIsLoading(false);
     console.log("🚀 ~ file: AxiosCall.tsx:39 ~ handleSSOUser ~ err:", err);
   }
 };
@@ -65,20 +68,20 @@ export const createUser = async ({
   return result;
 };
 
-// export const sendMessage = async (data) => {
-//   if (data && data.to && data.message) {
-//     return await fetch("scribble/create", { ...data });
-//   }
-// };
+export const sendMessage = async (data: any) => {
+  const result = await fetch("/scribble/create", { ...data });
+  return result;
+};
 
-// export const getAllMessages = async (user) => {
-//   if (user) {
-//     return await fetch("scribble/getScribbleByUserId", {
-//       _id__: "sans123123",
-//       user,
-//     });
-//   }
-// };
+export const getAllMessages = async () => {
+  const result = await fetch("/scribble", {});
+  return result;
+};
+
+export const getPublicMessages = async () => {
+  const result = await fetch("/scribble/getPublicScribbles", {});
+  return result;
+};
 
 const fetch = async (url: string | URL, params: any) => {
   if (url instanceof URL) {

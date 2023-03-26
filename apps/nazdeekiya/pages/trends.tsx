@@ -3,24 +3,30 @@ import Link from "next/link";
 import SingleMessageCard from "../components/SingleMessageCard";
 import { useAppStore } from "../stores/AppStore";
 import { SITE_URL } from "../constants";
-// import { getScribbleMessages } from "../sampleData/loginSetup";
+import { getPublicMessages } from "../helper/AxiosCall";
 
 const Trends = () => {
   const user = useAppStore((state) => state.user);
-  const [messages, messagesUpdater] = useState([]);
+  const messagesPublic = useAppStore((state) => state.messagesPublic);
+  const setMessagesPublic = useAppStore((state) => state.setMessagesPublic);
+
   const [loading, loadingUpdater] = useState(false);
 
-  const getInitialMessage = async () => {
+  async function fetchData() {
     try {
-      loadingUpdater(true);
-      //   let result = await getScribbleMessages();
-      //   //   console.log(result);
-      //   messagesUpdater(result);
-    } catch (err) {}
-    loadingUpdater(false);
-  };
+      const messages = await getPublicMessages();
+      if (messages?.messages) {
+        setMessagesPublic(messages?.messages);
+        loadingUpdater(false);
+      }
+    } catch (err) {
+      loadingUpdater(false);
+    }
+  }
+
   useEffect(() => {
-    getInitialMessage();
+    loadingUpdater(true);
+    fetchData();
   }, []);
 
   return (
@@ -29,7 +35,7 @@ const Trends = () => {
         <div className="container">
           <div className="row">
             <div className="col-lg-8">
-              <h2 className="mb-3">{"SCRIBBLE 2020"}</h2>
+              <h2 className="mb-3">SCRIBBLE 2023</h2>
               <div style={{ position: "relative" }}>
                 <div style={{ position: "relative" }}>
                   <code>
@@ -70,10 +76,10 @@ const Trends = () => {
                 </p>
               </div>
               <div>
-                {messages && messages.length ? (
+                {messagesPublic && messagesPublic.length ? (
                   <>
                     <div>Thank you Guys for supporting us.</div>
-                    {messages.map((message, index) => (
+                    {messagesPublic.map((message, index) => (
                       <SingleMessageCard key={index} message={message} />
                     ))}
                   </>

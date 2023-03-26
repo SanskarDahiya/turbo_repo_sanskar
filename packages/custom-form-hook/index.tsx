@@ -8,6 +8,7 @@ const FormWrapper = ({
   inputs: {
     name: string;
     label?: string;
+    textArea?: boolean;
     formFields?: RegisterOptions<FieldValues>;
     inputField?: InputHTMLAttributes<HTMLInputElement>;
   }[];
@@ -17,6 +18,7 @@ const FormWrapper = ({
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors, isLoading, isSubmitting },
   } = useForm();
   const loading = isLoading || isSubmitting;
@@ -28,6 +30,7 @@ const FormWrapper = ({
         if (!loading) {
           try {
             await onFormSubmit(data);
+            reset();
           } catch (err: any) {
             setError(err?.message || "something went wrong");
           }
@@ -50,21 +53,40 @@ const FormWrapper = ({
               >
                 {placeholder}
               </label>
-              {/* @ts-ignore */}
-              <input
-                {...restFields}
-                {...field.formFields}
-                id={field.name}
-                className="input-form-control"
-                placeholder={placeholder}
-                style={{
-                  border: "0px",
-                  borderBottom: `1px solid ${
-                    errors[field.name] ? "red" : "grey"
-                  }`,
-                }}
-                {...register(field.name, field.formFields)}
-              />
+
+              {field.textArea ? (
+                // @ts-ignore
+                <textarea
+                  {...restFields}
+                  {...field.formFields}
+                  id={field.name}
+                  className="input-form-control"
+                  placeholder={placeholder}
+                  style={{
+                    border: "0px",
+                    borderBottom: `1px solid ${
+                      errors[field.name] ? "red" : "grey"
+                    }`,
+                  }}
+                  {...register(field.name, field.formFields)}
+                />
+              ) : (
+                // @ts-ignore
+                <input
+                  {...restFields}
+                  {...field.formFields}
+                  id={field.name}
+                  className="input-form-control"
+                  placeholder={placeholder}
+                  style={{
+                    border: "0px",
+                    borderBottom: `1px solid ${
+                      errors[field.name] ? "red" : "grey"
+                    }`,
+                  }}
+                  {...register(field.name, field.formFields)}
+                />
+              )}
             </div>
           </React.Fragment>
         );

@@ -4,20 +4,14 @@ import Link from "next/link";
 import { useAppStore } from "../stores/AppStore";
 import SingleMessageCard from "../components/SingleMessageCard";
 import { IScribble } from "../types";
-import { useRouter } from "next/router";
 import { SITE_URL } from "../constants";
 
-// import { getAllMessages } from "../sampleData/loginSetup";
-
 const Index = () => {
-  const { user, isMessageSent } = useAppStore();
-
   return (
     <>
       <section className="ftco-section">
         <div className="container">
-          {isMessageSent ? <ShowMessageBox /> : <></>}
-          {user ? <ShowMessages /> : <ShowIndex />}
+          <ShowIndex />
           <br />
           <br />
         </div>
@@ -27,108 +21,8 @@ const Index = () => {
 };
 export default Index;
 
-const ShowMessages = () => {
-  const [messages, setMessages] = useState<IScribble[]>([]);
-  const [loading, setLoading] = useState(false);
-  const user = useAppStore((state) => state.user);
-  const userLink = `${SITE_URL}/user/${user?._id}`;
-  const getInitialMessage = async () => {
-    try {
-      setLoading(true);
-      if (user) {
-        // setMessages(
-        //   [1, 2, 3].map((name) => ({
-        //     _id: "scribble_" + name,
-        //     _createdOn: 1,
-        //     _updatedOn: 1,
-        //     message: "scribble_" + name,
-        //     from: "scribble_" + name,
-        //     to: "scribble_" + name,
-        //     isPublic: false,
-        //     comments: [],
-        //   }))
-        // );
-        // let result = await getAllMessages(user);
-        // console.log(result);
-        // setMessages(result);
-      } else {
-        alert("Please re-login again");
-      }
-    } catch (err: any) {
-      if (err?.code == "Session Expire") {
-        alert("Session Expire\nPlease Login Again\nThanks");
-      }
-    }
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    getInitialMessage();
-  }, []);
-
-  return (
-    <>
-      <div className="row">
-        <div className="col-lg-8 ">
-          <h2 className="mb-3">{"Welcome #" + user?.name}</h2>
-          <code>
-            Share this message:{" "}
-            <code>
-              <Link href={userLink} target="_new">
-                Hey There, Let&apos;s celebrate scribble day in a new way.
-                <br />
-                Click Here: {userLink}
-              </Link>
-            </code>
-          </code>
-          <h2 className="mb-3">{"SCRIBBLE 2023 :Messages"}</h2>
-          {messages && messages.length ? (
-            messages.map((message, index) => (
-              <SingleMessageCard key={index} message={message} />
-            ))
-          ) : (
-            <ShowNoMessageCard loading={loading} />
-          )}
-        </div>
-      </div>
-    </>
-  );
-};
-
-const ShowMessageBox = () => {
-  const userName = useAppStore((state) => state.user?.name || "");
-  return (
-    <>
-      <div className="row">
-        <div className="col-lg-8 ">
-          <h5 className="mb-3">{"Message Send To #" + userName}</h5>
-          Thanks to send your message!
-        </div>
-      </div>
-    </>
-  );
-};
-
-const ShowNoMessageCard = (props: { loading: boolean }) => {
-  return (
-    <>
-      <div className="row">
-        <div className="col-lg-8 ">
-          We are glad that you join us!!
-          <br />
-          Please share your link to your friends aka family to get messages.
-          <br />
-          <br />
-          {props.loading
-            ? "Finding your Scribble. Please Wait."
-            : "You Don't have any messages yet."}
-        </div>
-      </div>
-    </>
-  );
-};
-
 const ShowIndex = () => {
+  const user = useAppStore((state) => state.user);
   return (
     <>
       <div className="row">
@@ -175,7 +69,19 @@ const ShowIndex = () => {
               </div>
               <br />
               <br />
-              <Link href="/login">Click here to login/signup!</Link>
+              {user ? (
+                <>
+                  <code
+                    style={{
+                      fontSize: "24px",
+                    }}
+                  >
+                    Welcome!! {user.username}
+                  </code>
+                </>
+              ) : (
+                <Link href="/login">Click here to login/signup!</Link>
+              )}
             </div>
             <div>
               <br />
@@ -206,7 +112,7 @@ const ShowIndex = () => {
                 </p>
               </div>
             </div>
-            <Link href="/login">Click here to login/signup!</Link>
+            {!user && <Link href="/login">Click here to login/signup!</Link>}
           </div>
         </div>
       </div>

@@ -17,7 +17,7 @@
 .input-label {
   z-index: -1;
   position: absolute;
-  bottom: 0.15rem;
+  top: 30%;
   left: 4px;
   background: transparent;
   transition: all 150ms ease-in-out;
@@ -31,6 +31,6 @@
 
 .input-label:has(+ .input-form-control:focus),
 .input-label:has(+ .input-form-control:not(:placeholder-shown)) {
-  bottom: 2rem;
+  top: 0%;
   left: 0.25rem;
 }

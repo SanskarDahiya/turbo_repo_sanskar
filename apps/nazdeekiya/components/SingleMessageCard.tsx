@@ -13,10 +13,15 @@ const SingleMessageCard = (props: { message: IScribble }) => {
 
   const { message, from } = props.message;
 
-  if (!message || !message.trim()) {
+  let mofidiedMsg = message;
+  try {
+    mofidiedMsg = JSON.parse(message);
+  } catch (err) {
+    mofidiedMsg = message;
+  }
+  if (!mofidiedMsg || !mofidiedMsg.trim()) {
     return <></>;
   }
-
   return (
     <div
       className="row"
@@ -47,7 +52,16 @@ const SingleMessageCard = (props: { message: IScribble }) => {
           }}
         >
           <div>
-            <p>{message}</p>
+            <p>
+              {mofidiedMsg.split("\n").map((data, index) => {
+                return (
+                  <React.Fragment key={index}>
+                    {data}
+                    <br />
+                  </React.Fragment>
+                );
+              })}
+            </p>
           </div>
           <div>
             <sub>

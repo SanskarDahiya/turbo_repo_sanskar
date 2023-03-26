@@ -1,16 +1,30 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import { getClientDb } from "mongo-client";
+import { NextApiRequest } from "next";
+import { TABLES } from "../../../constants";
 import { Wrapper } from "../../../helper";
+import { IScribble, modifyScribble } from "../../../types";
 
-export default Wrapper(async function handler(req: NextApiRequest) {
-  // res.status(200).end(JSON.stringify({ success: true }));
-
-  return { success: true };
+export default Wrapper(async (req: NextApiRequest) => {
+  const db = await getClientDb();
+  const AllMessages = (await db
+    .collection(TABLES.scribble)
+    .find(
+      {
+        $or: [
+          {
+            // @ts-ignore
+            _id: "nazdeekiyaan",
+            deleted: false,
+          },
+          {
+            isPublic: true,
+            deleted: false,
+          },
+        ],
+      },
+      { sort: { _createdOn: -1 } }
+    )
+    .toArray()) as unknown as IScribble[] | [] | null;
+  const modifiedMessages = AllMessages?.map(modifyScribble);
+  return { success: true, messages: modifiedMessages };
 });
-
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: "500kb",
-    },
-  },
-};
