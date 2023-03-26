@@ -29,7 +29,7 @@ export default Wrapper(async (req: NextApiRequest) => {
   {
     const userInfo = (await db
       .collection(TABLES.user)
-      .findOne({ username })) as unknown as IUser | null;
+      .findOne({ _id: username })) as unknown as IUser | null;
 
     if (userInfo) {
       throw new Error("User already exists");
