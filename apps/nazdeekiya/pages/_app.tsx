@@ -83,7 +83,7 @@ export default function MyApp({ Component, pageProps }: AppPropsType) {
             "all_scripts"
           ) as HTMLDivElement;
           //FIXME:
-          divElem.appendChild(elem);
+          // divElem.appendChild(elem);
         }
       });
     }, 250);
@@ -115,7 +115,19 @@ export default function MyApp({ Component, pageProps }: AppPropsType) {
       >
         <div className="container d-flex align-items-center px-4">
           <button
-            className="navbar-toggler"
+            className="navbar-toggler collapsed"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const elem = document.getElementById(
+                "ftco-nav"
+              ) as HTMLDivElement | null;
+              const thisElem = e.target as HTMLButtonElement;
+              if (elem) {
+                thisElem.classList.toggle("collapsed");
+                elem.classList.toggle("show");
+              }
+            }}
             type="button"
             data-toggle="collapse"
             data-target="#ftco-nav"
