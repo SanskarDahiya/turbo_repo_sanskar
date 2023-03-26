@@ -28,9 +28,7 @@ const ShowMessages = () => {
   const messages = useAppStore((state) => state.messages);
   const setMessages = useAppStore((state) => state.setMessages);
 
-  const userLink = `${
-    typeof window !== "undefined" ? window.location.origin : SITE_URL
-  }/user/${user?._id}`;
+  const userLink = `${SITE_URL}/user/${user?._id}`;
   const [isFetching, setIsFetching] = useState(true);
   const isUserPresent = !!user?._id;
   async function fetchData() {

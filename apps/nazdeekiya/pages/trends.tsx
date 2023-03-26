@@ -60,7 +60,7 @@ const Trends = () => {
                 <h2>Soon Adding This Exiting Feature</h2>
                 <p>
                   Here, you can post your scribble as public or write anything
-                  to us via username{" "}
+                  to us via username <br />
                   <Link href={"/user/nazdeekiyaan"}>
                     <code
                       style={{
@@ -68,10 +68,7 @@ const Trends = () => {
                       }}
                       suppressHydrationWarning
                     >
-                      {typeof window !== "undefined"
-                        ? window.location.origin
-                        : SITE_URL}
-                      /user/
+                      {SITE_URL}/user/
                       <span style={{ color: "#e83e8c" }}>nazdeekiyaan</span>
                     </code>{" "}
                     or click here
