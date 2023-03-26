@@ -12,17 +12,12 @@ export default Wrapper(async (req: NextApiRequest) => {
       {
         $or: [
           {
-            // @ts-ignore
-            _id: "nazdeekiyaan",
-            deleted: false,
-          },
-          {
             isPublic: true,
             deleted: false,
           },
         ],
       },
-      { sort: { _createdOn: -1 } }
+      { sort: { _createdOn: -1, _id: -1 } }
     )
     .toArray()) as unknown as IScribble[] | [] | null;
   const modifiedMessages = AllMessages?.map(modifyScribble);

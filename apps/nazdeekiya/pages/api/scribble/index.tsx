@@ -47,7 +47,7 @@ export default Wrapper(async (req: NextApiRequest) => {
         deleted: false,
       },
       {
-        sort: { _createdOn: -1 },
+        sort: { _createdOn: -1, _id: -1 },
       }
     )
     .toArray()) as unknown as IScribble[] | [] | null;
