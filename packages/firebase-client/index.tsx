@@ -8,8 +8,6 @@ export const ScribbleTypes = {
   ...S_default_Types,
 };
 
-const db = getFirestore();
-
 export const TABLES = {
   user: "scribble_user",
   connection: "scribble_tokens",
@@ -22,10 +20,12 @@ async function InsertIntoTable(TABLE: string, info: any) {
     info._id = randomUUID();
   }
   const _id = info._id;
+  const db = getFirestore();
   await db.collection(TABLE).doc(_id).set(info);
 }
 
 async function FindFromTable(TABLE: string, doc_id: string) {
+  const db = getFirestore();
   const result = await db.collection(TABLE).doc(doc_id).get();
   if (result.exists === false || result.exists === undefined) {
     return;
@@ -43,6 +43,7 @@ async function FilterFromTable(
     [key: string]: number;
   }
 ) {
+  const db = getFirestore();
   let QueryRef: any = db.collection(TABLE);
   for (let info_key in info) {
     QueryRef = QueryRef.where(info_key, "==", info[info_key]);
@@ -117,6 +118,7 @@ export const findUserByDevice = async (deviceId: string) => {
 export const updateUserInfo = async (userId: any, changes: any) => {
   // const db = await getClientDb();
   // await db.collection(TABLES.user).findOneAndUpdate({ _id: userId }, change);
+  const db = getFirestore();
   const userRef = db.collection(TABLES.user).doc(userId);
   try {
     const res = await db.runTransaction(async (t) => {
@@ -177,6 +179,7 @@ export const removeOldTokens = async (
   }
 ) => {
   let isFetchingData = true;
+  const db = getFirestore();
   while (isFetchingData) {
     const TokenResults = await FilterFromTable(TABLES.connection, {
       userId: userId,
