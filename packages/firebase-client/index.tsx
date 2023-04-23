@@ -53,7 +53,7 @@ async function FilterFromTable(
   const result = await QueryRef.get();
   const documents: any[] = [];
   if (result.empty === false || result.empty === undefined) {
-    result.forEach((e) => {
+    result.forEach((e: any) => {
       const doc = e.data();
       if (doc) {
         doc["_id"] = e.id;
