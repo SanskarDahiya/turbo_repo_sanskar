@@ -7,6 +7,7 @@
     "packages/*"
   ],
   "scripts": {
+    "preinstall": "sh clone_server.sh",
     "build": "turbo run build",
     "start-nazdeekiya": "turbo run dev --filter nazdeekiya",
     "dev": "turbo run dev",
